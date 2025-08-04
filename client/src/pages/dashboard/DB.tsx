@@ -3,6 +3,7 @@ import { Box, Grow, styled, Typography } from '@u_ui/u-ui';
 import React from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { visuallyHidden } from '@mui/utils';
+import ScrollContainer from '../../components/ScrollContainer';
 
 interface Data {
     i: number;
@@ -281,11 +282,15 @@ export default function DB() {
             height: '100%',
             transition: '.2s ease all'
         }}>
-            <Tables db={params.database} />
+            <ScrollContainer>
+                <Tables db={params.database} />
+            </ScrollContainer>
             <Box
                 sx={{ transition: '.2s ease all', flex: location.pathname.split('/')[4] ? 1 : 0}}
             >
-                <Outlet />
+                <ScrollContainer>
+                    <Outlet />
+                </ScrollContainer>
             </Box>
         </Box>
     )

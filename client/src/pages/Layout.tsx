@@ -99,9 +99,7 @@ export default function Layout() {
                 </Button>
             </Box>
             <Paper elevation={location.pathname.split('/')[2] ? 0 : 1} sx={(theme) => ({ flex: 1, height: `calc(100dvh - ${theme.spacing(2)})`, overflow: 'hidden', borderRadius: 0 })}>
-                <Box id="content-scroll" sx={{ pr: 1.5, overflowY: 'auto', colorScheme: 'dark', height: '100%' }}>
-                    <Outlet />
-                </Box>
+                <Outlet />
             </Paper>
         </Box>
     )
