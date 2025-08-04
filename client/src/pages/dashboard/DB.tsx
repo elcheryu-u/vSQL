@@ -1,7 +1,7 @@
 import { Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from '@mui/material';
 import { Box, Grow, styled, Typography } from '@u_ui/u-ui';
 import React from 'react'
-import { useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { visuallyHidden } from '@mui/utils';
 
 interface Data {
@@ -46,7 +46,7 @@ function EnhanceTableHead(props: EnhancedTableProps) {
     return (
         <TableHead sx={{ backgroundColor: 'neutral.main' }}>
             <TableRow>
-                <TableCell padding='checkbox'>
+                <TableCell padding='checkbox' sx={{ borderTopLeftRadius: 8}}>
                     <Checkbox
                         color="secondary"
                         indeterminate={numSelected > 0 && numSelected < rowCount}
@@ -60,6 +60,11 @@ function EnhanceTableHead(props: EnhancedTableProps) {
                 {headCells.map((headCell) => (
                     <TableCell
                         key={headCell.id}
+                        sx={{
+                            '&:nth-last-of-type(1)': {
+                                borderTopRightRadius: 8
+                            }
+                        }}
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
@@ -84,15 +89,29 @@ function EnhanceTableHead(props: EnhancedTableProps) {
 }
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    transition: '.2s ease all',
+    '&:hover': {
+        backgroundColor: theme.palette.action.hover
+    },
     '&:nth-of-type(odd)': {
         backgroundColor: theme.palette.neutral.main,
         '&:hover': {
             backgroundColor: theme.palette.action.selected,
         },
-    
+    },
+    '&:nth-of-type(1)': {
+        '& td': {
+            borderTopLeftRadius: 0
+        },
+        '& th:nth-last-of-type(1)': {
+            borderTopRightRadius: 0
+        }
     },
     '&.Mui-selected': {
-        backgroundColor: theme.palette.action.hover,
+        backgroundColor: theme.palette.action.focus,
+        '&:hover': {
+            backgroundColor: theme.palette.action.selected
+        }
     },
     // hide last border
     '&:last-child td, &:last-child th': {
@@ -101,6 +120,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const Tables = ({ db }: { db: string | undefined }) => {
+    const navigate = useNavigate();
+
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('i');
     const [tables, setTables] = React.useState<Array<{ table: string, i: number }>>([]);
@@ -179,10 +200,10 @@ const Tables = ({ db }: { db: string | undefined }) => {
     }
 
     return (
-        <div>
+        <Box sx={{ flex: 1, flexBasis: .5 }}>
             {tables.length > 0 ? (
                 <Box>
-                    <TableContainer>
+                    <TableContainer sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, height: '100%'}}>
                         <Table>
                             <EnhanceTableHead 
                                 numSelected={selected.length}
@@ -199,7 +220,8 @@ const Tables = ({ db }: { db: string | undefined }) => {
                                     return (
                                         <StyledTableRow
                                             hover
-                                            onContextMenu={(event) => handleClick(event, table.i)}
+                                            onClick={(event) => handleClick(event, table.i)}
+                                            onDoubleClick={() => navigate(`/dashboard/db/${db}/${table.table}`)}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
@@ -207,8 +229,13 @@ const Tables = ({ db }: { db: string | undefined }) => {
                                             selected={isItemSelected}
                                             sx={{ cursor: 'pointer' }}
                                         >
-                                            <TableCell padding='checkbox' sx={{ borderTopLeftRadius: 8, borderBottomLeftRadius: 8, borderColor: 'transparent' }}>
-                                                <Grow in={isItemSelected} unmountOnExit>
+                                            <TableCell 
+                                                padding='checkbox' 
+                                                sx={{ 
+                                                    borderColor: 'transparent'
+                                                }}
+                                            >
+                                                <Grow in={isItemSelected && selected.length > 1} unmountOnExit>
                                                     <Checkbox 
                                                         color='secondary'
                                                         checked={true}
@@ -222,9 +249,8 @@ const Tables = ({ db }: { db: string | undefined }) => {
                                                 padding='none'
                                                 sx={{
                                                     py: 1.5,
-                                                    borderTopRightRadius: 8, 
-                                                    borderBottomRightRadius: 8,
-                                                    borderColor: 'transparent'
+                                                    borderColor: 'transparent',
+                                                    userSelect: 'none'
                                                 }}
                                             >
                                                 {table.table}
@@ -239,7 +265,7 @@ const Tables = ({ db }: { db: string | undefined }) => {
             ) : (
                 <Typography variant='body1'>No hay tablas en esta base de datos.</Typography>
             )}
-        </div>
+        </Box>
     )
 }
 
@@ -248,11 +274,19 @@ export default function DB() {
     console.log(params.database);
 
     return (
-        <div>
-            <Box>
-                <Typography variant='h5' component='h2'>Tablas</Typography>
-                <Tables db={params.database} />
+        <Box sx={{
+            display: 'flex',
+            gap: 1,
+            width: '100%',
+            height: '100%',
+            transition: '.2s ease all'
+        }}>
+            <Tables db={params.database} />
+            <Box
+                sx={{ transition: '.2s ease all', flex: location.pathname.split('/')[4] ? 1 : 0}}
+            >
+                <Outlet />
             </Box>
-        </div>
+        </Box>
     )
 }

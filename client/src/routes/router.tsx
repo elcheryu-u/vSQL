@@ -6,6 +6,7 @@ import ConnectForm from "../components/ConnectForm";
 import Layout from "../pages/Layout";
 import DB from "../pages/dashboard/DB";
 import Loading from "../pages/Loading";
+import Table from "../pages/dashboard/table/Table";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const RequireConnection = ({ children }: { children: React.JSX.Element }) => {
@@ -43,8 +44,14 @@ const router = createBrowserRouter([
                     },
                     {
                         path: 'db/:database',
-                        element: <DB />
-                    }
+                        element: <DB />,
+                        children: [
+                            {
+                                path: ':table',
+                                element: <Table />
+                            }
+                        ]
+                    },
                 ]
             }
         ]

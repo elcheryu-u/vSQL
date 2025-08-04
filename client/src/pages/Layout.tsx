@@ -5,11 +5,15 @@ import { LogoutRounded, StorageRounded } from '@mui/icons-material';
 import { useConnection } from '../context/ConnectionContext';
 
 const NavButton = ({ to, children }: { to: string, children: React.ReactNode }) => {
-    const [isActive, setIsActive] = React.useState(window.location.pathname === to);
+    const [isActive, setIsActive] = React.useState(window.location.pathname.split('/')[3] === to.split('/')[3]);
     const location = useLocation();
 
+    console.log(isActive)
+
+    console.log(location.pathname.split('/')[3]);
+
     React.useEffect(() => {
-        setIsActive(location.pathname === to);
+        setIsActive(location.pathname.split('/')[3] === to.split('/')[3]);
     }, [location.pathname, to]);
 
     return (
@@ -60,6 +64,8 @@ export default function Layout() {
         fetchDatabases();
     }, []);
 
+    console.log(location.pathname.split('/'))
+
     React.useEffect(() => {
         const contentScroll = document.getElementById('content-scroll');
         contentScroll?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -92,8 +98,8 @@ export default function Layout() {
                     Cerrar sesión
                 </Button>
             </Box>
-            <Paper sx={(theme) => ({ flex: 1, height: `calc(100dvh - ${theme.spacing(2)})`, overflow: 'hidden' })}>
-                <Box id="content-scroll" sx={{ p: 1.5, overflowY: 'auto', colorScheme: 'dark', height: '100%' }}>
+            <Paper elevation={location.pathname.split('/')[2] ? 0 : 1} sx={(theme) => ({ flex: 1, height: `calc(100dvh - ${theme.spacing(2)})`, overflow: 'hidden', borderRadius: 0 })}>
+                <Box id="content-scroll" sx={{ pr: 1.5, overflowY: 'auto', colorScheme: 'dark', height: '100%' }}>
                     <Outlet />
                 </Box>
             </Paper>
