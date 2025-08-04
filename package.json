@@ -1,0 +1,19 @@
+{
+  "name": "vsql",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:agent\" \"npm run dev:client\" \"npm run dev:electron\"",
+    "dev:agent": "node agent/index.js",
+    "dev:client": "cd client && npm run dev",
+    "dev:electron": "wait-on http://localhost:5173 && electron electron/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "electron": "^37.2.4",
+    "wait-on": "^8.0.4"
+  }
+}
