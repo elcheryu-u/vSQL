@@ -73,6 +73,35 @@ app.get("/databases", async (req, res) => {
   }
 });
 
+app.get("/databases/table", async (req, res) => {
+  if (!connection) {
+    return res
+      .status(400)
+      .json({ success: false, error: "No hay conexión activa." });
+  }
+
+  const { database, table } = req.query;
+
+  if (!database || !table) {
+    return res.status(400).json({
+      success: false,
+      error: "Faltan los parámetros 'database' o 'table'.",
+    });
+  }
+
+  try {
+    // Cambiar a la base de datos indicada
+    await connection.query(`USE \`${database}\``);
+
+    // Obtener los datos de la tabla
+    const [rows] = await connection.query(`SELECT * FROM \`${table}\``);
+
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+})
+
 app.get("/databases/tables", async (req, res) => {
   if (!connection) {
     return res

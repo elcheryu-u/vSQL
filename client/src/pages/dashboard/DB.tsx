@@ -180,7 +180,6 @@ const Tables = ({ db }: { db: string | undefined }) => {
                         i: Number(key),
                     }));
                     setTables(result);
-
                 } else {
                     console.error('Error fetching tables');
                 }
@@ -194,75 +193,71 @@ const Tables = ({ db }: { db: string | undefined }) => {
         fetchTables();
     }, [db]);
 
-    console.log(tables);
-
     if (loading) {
         return <Typography variant='body1'>Cargando tablas...</Typography>
     }
 
     return (
-        <Box sx={{ flex: 1, flexBasis: .5 }}>
+        <Box sx={{ flex: 1, minWidth: 300, width: '100%' }}>
             {tables.length > 0 ? (
-                <Box>
-                    <TableContainer sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, height: '100%'}}>
-                        <Table>
-                            <EnhanceTableHead 
-                                numSelected={selected.length}
-                                order={order}
-                                orderBy={orderBy}
-                                onSelectAllClick={handleSelectAllClick}
-                                onRequestSort={handleRequestSort}
-                                rowCount={tables.length}
-                            />
-                            <TableBody>
-                                {tables.map((table) => {
-                                    const isItemSelected = selected.includes(table.i);
-                                    const labelId = `table-${table}`;
-                                    return (
-                                        <StyledTableRow
-                                            hover
-                                            onClick={(event) => handleClick(event, table.i)}
-                                            onDoubleClick={() => navigate(`/dashboard/db/${db}/${table.table}`)}
-                                            role="checkbox"
-                                            aria-checked={isItemSelected}
-                                            tabIndex={-1}
-                                            key={table.i}
-                                            selected={isItemSelected}
-                                            sx={{ cursor: 'pointer' }}
+                <TableContainer sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, height: '100%'}}>
+                    <Table>
+                        <EnhanceTableHead 
+                            numSelected={selected.length}
+                            order={order}
+                            orderBy={orderBy}
+                            onSelectAllClick={handleSelectAllClick}
+                            onRequestSort={handleRequestSort}
+                            rowCount={tables.length}
+                        />
+                        <TableBody>
+                            {tables.map((table) => {
+                                const isItemSelected = selected.includes(table.i);
+                                const labelId = `table-${table}`;
+                                return (
+                                    <StyledTableRow
+                                        hover
+                                        onClick={(event) => handleClick(event, table.i)}
+                                        onDoubleClick={() => navigate(`/dashboard/db/${db}/${table.table}`)}
+                                        role="checkbox"
+                                        aria-checked={isItemSelected}
+                                        tabIndex={-1}
+                                        key={table.i}
+                                        selected={isItemSelected}
+                                        sx={{ cursor: 'pointer' }}
+                                    >
+                                        <TableCell 
+                                            padding='checkbox' 
+                                            sx={{ 
+                                                borderColor: 'transparent'
+                                            }}
                                         >
-                                            <TableCell 
-                                                padding='checkbox' 
-                                                sx={{ 
-                                                    borderColor: 'transparent'
-                                                }}
-                                            >
-                                                <Grow in={isItemSelected && selected.length > 1} unmountOnExit>
-                                                    <Checkbox 
-                                                        color='secondary'
-                                                        checked={true}
-                                                    />
-                                                </Grow>
-                                            </TableCell>
-                                            <TableCell
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                padding='none'
-                                                sx={{
-                                                    py: 1.5,
-                                                    borderColor: 'transparent',
-                                                    userSelect: 'none'
-                                                }}
-                                            >
-                                                {table.table}
-                                            </TableCell>
-                                        </StyledTableRow>
-                                    )
-                                })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>
+                                            <Grow in={isItemSelected && selected.length > 1} unmountOnExit>
+                                                <Checkbox 
+                                                    color='secondary'
+                                                    checked={true}
+                                                />
+                                            </Grow>
+                                        </TableCell>
+                                        <TableCell
+                                            component="th"
+                                            id={labelId}
+                                            scope="row"
+                                            padding='none'
+                                            sx={{
+                                                py: 1.5,
+                                                borderColor: 'transparent',
+                                                userSelect: 'none'
+                                            }}
+                                        >
+                                            {table.table}
+                                        </TableCell>
+                                    </StyledTableRow>
+                                )
+                            })}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             ) : (
                 <Typography variant='body1'>No hay tablas en esta base de datos.</Typography>
             )}
@@ -282,15 +277,11 @@ export default function DB() {
             height: '100%',
             transition: '.2s ease all'
         }}>
-            <ScrollContainer>
-                <Tables db={params.database} />
-            </ScrollContainer>
+            <Tables db={params.database} />
             <Box
                 sx={{ transition: '.2s ease all', flex: location.pathname.split('/')[4] ? 1 : 0}}
             >
-                <ScrollContainer>
-                    <Outlet />
-                </ScrollContainer>
+                <Outlet />
             </Box>
         </Box>
     )

@@ -8,10 +8,6 @@ const NavButton = ({ to, children }: { to: string, children: React.ReactNode }) 
     const [isActive, setIsActive] = React.useState(window.location.pathname.split('/')[3] === to.split('/')[3]);
     const location = useLocation();
 
-    console.log(isActive)
-
-    console.log(location.pathname.split('/')[3]);
-
     React.useEffect(() => {
         setIsActive(location.pathname.split('/')[3] === to.split('/')[3]);
     }, [location.pathname, to]);
@@ -64,7 +60,6 @@ export default function Layout() {
         fetchDatabases();
     }, []);
 
-    console.log(location.pathname.split('/'))
 
     React.useEffect(() => {
         const contentScroll = document.getElementById('content-scroll');

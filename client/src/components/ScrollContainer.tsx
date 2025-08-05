@@ -3,7 +3,7 @@ import React from 'react'
 
 export default function ScrollContainer({ children }: { children: React.ReactNode }) {
     return (
-        <Box sx={{ pr: 1.5, overflowY: 'auto', colorScheme: 'dark', height: '100%', flex: 1 }}>
+        <Box sx={{ pr: 1.5, colorScheme: 'dark', height: '100%', flex: 1 }}>
             {children}
         </Box>
     )
