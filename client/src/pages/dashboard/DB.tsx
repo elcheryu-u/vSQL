@@ -198,7 +198,7 @@ const Tables = ({ db }: { db: string | undefined }) => {
     }
 
     return (
-        <Box sx={{ flex: 1, minWidth: 300, width: '100%' }}>
+        <Box sx={{ flex: 1, minWidth: 300, maxWidth: 300, width: '100%' }}>
             {tables.length > 0 ? (
                 <TableContainer sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, height: '100%'}}>
                     <Table>
@@ -279,7 +279,13 @@ export default function DB() {
         }}>
             <Tables db={params.database} />
             <Box
-                sx={{ transition: '.2s ease all', flex: location.pathname.split('/')[4] ? 1 : 0}}
+                sx={{ 
+                    transition: '.2s ease all', 
+                    flex: location.pathname.split('/')[4] ? 1 : 0,
+                    height: '100%',
+                    width: '100%',
+                    display: 'flex'
+                }}
             >
                 <Outlet />
             </Box>

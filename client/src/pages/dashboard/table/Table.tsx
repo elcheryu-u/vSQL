@@ -1,4 +1,4 @@
-import { Checkbox, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from '@mui/material';
+import { Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from '@mui/material';
 import { Box, styled } from '@u_ui/u-ui';
 import React from 'react'
 import { useParams } from 'react-router-dom';
@@ -19,27 +19,18 @@ interface HeadCell {
     numeric: boolean;
 }
 
-const headCells: readonly HeadCell[] = [
-    {
-        id: 'i',
-        numeric: false,
-        disablePadding: true,
-        label: 'Tabla'
-    }
-]
-
 interface EnhancedTableProps {
   numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
-  headCells: Array<[]>,
+  headCells: [HeadCell],
   rowCount: number;
 }
 
 function EnhanceTableHead(props: EnhancedTableProps) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells } = props;
     const createSortHandler =
         (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
             onRequestSort(event, property);
@@ -121,7 +112,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-export default function Table() {
+export default function TableDatabase() {
     const { database, table } = useParams<{ database: string; table: string }>();
 
     const [data, setData] = React.useState<any>([]);
@@ -143,13 +134,21 @@ export default function Table() {
 
                 console.log(response)
 
-                const result = response.data.map((value: string, index: number) => ({
-                    table: value,
-                    i: index,
+                const result = response.data.map((row: any, index: number) => ({
+                    ...row,
+                    _index: index,
                 }));
 
                 setData(result);
-                setColumns(Object.keys(response.data[0]))
+
+                const columnDefs = Object.keys(response.data[0]).map((key) => ({
+                    id: key,
+                    numeric: typeof response.data[0][key] === 'number',
+                    disablePadding: false,
+                    label: key.charAt(0).toUpperCase() + key.slice(1),
+                }));
+
+                setColumns(columnDefs);
             } catch (err) {
                 console.error(err);
                 
@@ -169,41 +168,58 @@ export default function Table() {
     if (!data || data.length === 0) return <p>No hay datos.</p>
 
     return (
-        <Box sx={{ flex: 1, minWidth: 300}}>
-            <TableContainer>
-                <EnhanceTableHead 
-                    numSelected={-1}
-                    headCells={columns}
-                    order={'asc'}
-                    rowCount={columns.length}
-                />
-            </TableContainer>
-            {/* <Box>
-                <TableContainer>
-                    <Table>
-
-                    </Table>
+        <Box sx={{ flex: 1, minWidth: 300, width: '100%'}}>
+            <TableContainer sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, height: '100%'}}>
+                <Table>
+                    <EnhanceTableHead 
+                        numSelected={-1}
+                        headCells={columns}
+                        order={'asc'}
+                        rowCount={columns.length}
+                    />
                     <TableBody>
-                        
+                        {data.map((row: any, rowIndex: any) => (
+                            <StyledTableRow
+                                hover
+                                role='checkbox'
+                                tabIndex={-1}
+                                key={rowIndex}
+                                selected={false}
+                                sx={{ cursor: 'pointer' }}
+                            >
+                                <TableCell
+                                    padding='checkbox'
+                                    sx={{ 
+                                        borderColor: 'transparent'
+                                    }}
+                                >
+                                    <Checkbox 
+                                        color='secondary'
+                                        checked={false}
+                                    />
+                                </TableCell>
+                                {columns.map((column: HeadCell) => (
+                                    <TableCell 
+                                        key={column.id} 
+                                        align={column.numeric ? 'right' : 'left'}
+                                        component='th'
+                                        id={column.id}
+                                        scope='row'
+                                        padding='none'
+                                        sx={{
+                                            py: 1.5,
+                                            borderColor: 'transparent',
+                                            userSelect: 'none'
+                                        }}
+                                    >
+                                        {row[column.id] || 'NULL'}
+                                    </TableCell>
+                                ))}
+                            </StyledTableRow>
+                        ))}
                     </TableBody>
-                </TableContainer>
-            </Box> */}
-                {/* <thead>
-                    <tr>
-                    {data.length > 0 && Object.keys(data[0]).map((col) => (
-                        <th key={col}>{col}</th>
-                    ))}
-                    </tr>
-                </thead> */}
-                {/* <tbody>
-                    {data.map((row: any, index: number) => (
-                    <tr key={index}>
-                    {data.length > 0 && Object.keys(data[0]).map((col: string) => (
-                        <td key={col}>{row[col]}</td>
-                    ))}
-                    </tr>
-                ))}
-                </tbody> */}
+                </Table>
+            </TableContainer>
         </Box>
         
     )
